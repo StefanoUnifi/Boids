@@ -11,9 +11,10 @@ constexpr float MAX_SPEED = 6.0f;
 constexpr float PROTECTED_RANGE = 8.0f;
 constexpr float VISION_RANGE = 40.0f;
 constexpr float AVOID_FACTOR = 0.05f;
+constexpr float MATCHING_FACTOR = 0.05f;
 
 //struct ausiliaria per avere una posizione in 2D (x,y) e per avere tipi di ritorno
-struct Posizione2D {
+struct Vettore2D {
     float x;
     float y;
 };
@@ -35,8 +36,8 @@ class Boid {
         void setVy(float vy);
 
         //regole dei boids
-        Posizione2D separation(const std::vector<Boid>& allBoids) const;
-        void alignment(std::vector<Boid>& allBoids);   //TODO
+        Vettore2D separation(const std::vector<Boid>& allBoids) const;
+        Vettore2D alignment(const std::vector<Boid>& allBoids) const;
         void cohesion(std::vector<Boid>& allBoids);    //TODO
 
         //funzioni ausiliarie

@@ -27,15 +27,14 @@ float Boid::distance(const Boid& otherBoid) const {
 }
 
 //separazione
-Posizione2D Boid::separation(const std::vector<Boid>& allBoids) const {
+Vettore2D Boid::separation(const std::vector<Boid>& allBoids) const {
     float close_dx = 0.0f;
     float close_dy = 0.0f;
 
     for (const auto& otherBoid : allBoids) {
         if (this != &otherBoid) { //per evitare di confrontare il currentBoid con se stesso
-            // Calcola la direzione opposta per allontanarsi
+            //Calcola la distanza tra attuale e altro boid per vedere se è nel PROTECTED_RANGE
             float dist = this->distance(otherBoid);
-
             if (dist > 0.0f && dist < PROTECTED_RANGE) {
                 close_dx += this->getX() - otherBoid.getX();
                 close_dy += this->getY() - otherBoid.getY();
@@ -43,9 +42,39 @@ Posizione2D Boid::separation(const std::vector<Boid>& allBoids) const {
         }
     }
     //steer indica di quanto (in termini di velocità) deve sterzare il currentBoid rispetto a quelli nel PROTECTED_RANGE (se + vicino --> più potente la sterzata)
-    Posizione2D steer = {0.0f, 0.0f};
+    Vettore2D steer = {0.0f, 0.0f};
     steer.x = close_dx * AVOID_FACTOR;
     steer.y = close_dy * AVOID_FACTOR;
 
     return steer;
+}
+
+//allineamento
+Vettore2D Boid::alignment(const std::vector<Boid>& allBoids) const {
+    float xvel_avg = 0.0f;
+    float yvel_avg = 0.0f;
+    int neighboring_boids = 0;
+
+    for (const auto& otherBoid : allBoids) {
+        if (this != &otherBoid) {
+            float dist = this->distance(otherBoid);
+            //Calcola la distanza tra attuale e altro boid per vedere se è nel VISION_RANGE
+            if (dist > 0.0f && dist < VISION_RANGE) {
+                xvel_avg += otherBoid.getVx();
+                yvel_avg += otherBoid.getVy();
+                neighboring_boids++;
+            }
+        }
+    }
+
+    if (neighboring_boids > 0) {
+        xvel_avg /= neighboring_boids;
+        yvel_avg /= neighboring_boids;
+    }
+
+    Vettore2D align = {0.0f, 0.0f};
+    align.x += (xvel_avg - this->getVx()) * MATCHING_FACTOR;
+    align.y += (yvel_avg - this->getVy()) * MATCHING_FACTOR;
+
+    return align;
 }
