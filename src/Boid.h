@@ -4,11 +4,19 @@
 
 #ifndef BOIDS_BOID_H
 #define BOIDS_BOID_H
+#include <vector>
 
-constexpr float MIN_SPEED = 3.0;
-constexpr float MAX_SPEED = 6.0;
-constexpr float PROTECTED_RANGE = 8.0;
-constexpr float VISION_RANGE = 40.0;
+constexpr float MIN_SPEED = 3.0f;
+constexpr float MAX_SPEED = 6.0f;
+constexpr float PROTECTED_RANGE = 8.0f;
+constexpr float VISION_RANGE = 40.0f;
+constexpr float AVOID_FACTOR = 0.05f;
+
+//struct ausiliaria per avere una posizione in 2D (x,y) e per avere tipi di ritorno
+struct Posizione2D {
+    float x;
+    float y;
+};
 
 class Boid {
     public:
@@ -26,10 +34,13 @@ class Boid {
         void setVx(float vx);
         void setVy(float vy);
 
-        //funzioni dei boids
-        void separation();  //TODO: valuta come implementare la separazione (meglio con vettore di boids)
-        void alignment();   //TODO: stesso discorso
-        void cohesion();    //TODO: stesso discorso
+        //regole dei boids
+        Posizione2D separation(const std::vector<Boid>& allBoids) const;
+        void alignment(std::vector<Boid>& allBoids);   //TODO
+        void cohesion(std::vector<Boid>& allBoids);    //TODO
+
+        //funzioni ausiliarie
+        float distance(const Boid& otherBoid) const;
 
     private:
         float x, y, vx, vy; //vx, vy = velocità su x ed y (che sono sempre comprese tra MIN_SPEED e MAX_SPEED)
