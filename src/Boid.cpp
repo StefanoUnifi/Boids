@@ -67,14 +67,43 @@ Vettore2D Boid::alignment(const std::vector<Boid>& allBoids) const {
         }
     }
 
+    Vettore2D align = {0.0f, 0.0f};
     if (neighboring_boids > 0) {
         xvel_avg /= neighboring_boids;
         yvel_avg /= neighboring_boids;
+
+        align.x += (xvel_avg - this->getVx()) * MATCHING_FACTOR;
+        align.y += (yvel_avg - this->getVy()) * MATCHING_FACTOR;
     }
 
-    Vettore2D align = {0.0f, 0.0f};
-    align.x += (xvel_avg - this->getVx()) * MATCHING_FACTOR;
-    align.y += (yvel_avg - this->getVy()) * MATCHING_FACTOR;
-
     return align;
+}
+
+//coesione
+Vettore2D Boid::cohesion(const std::vector<Boid>& allBoids) const {
+    float xpos_avg = 0.0f;
+    float ypos_avg = 0.0f;
+    int neighboring_boids = 0;
+
+    for (const auto& otherBoid : allBoids) {
+        if (this != &otherBoid) {
+            float dist = this->distance(otherBoid);
+            if (dist > 0.0f && dist < VISION_RANGE) {
+                xpos_avg += otherBoid.getX();
+                ypos_avg += otherBoid.getY();
+                neighboring_boids++;
+            }
+        }
+    }
+
+    Vettore2D cohesion = {0.0f, 0.0f};
+    if (neighboring_boids > 0) {
+        xpos_avg /= neighboring_boids;
+        ypos_avg /= neighboring_boids;
+
+        cohesion.x = (xpos_avg - this->getX()) * CENTERING_FACTOR;
+        cohesion.y = (ypos_avg - this->getY()) * CENTERING_FACTOR;
+    }
+
+    return cohesion;
 }

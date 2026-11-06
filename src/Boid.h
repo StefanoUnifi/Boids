@@ -12,6 +12,7 @@ constexpr float PROTECTED_RANGE = 8.0f;
 constexpr float VISION_RANGE = 40.0f;
 constexpr float AVOID_FACTOR = 0.05f;
 constexpr float MATCHING_FACTOR = 0.05f;
+constexpr float CENTERING_FACTOR = 0.0005f;
 
 //struct ausiliaria per avere una posizione in 2D (x,y) e per avere tipi di ritorno
 struct Vettore2D {
@@ -38,7 +39,7 @@ class Boid {
         //regole dei boids
         Vettore2D separation(const std::vector<Boid>& allBoids) const;
         Vettore2D alignment(const std::vector<Boid>& allBoids) const;
-        void cohesion(std::vector<Boid>& allBoids);    //TODO
+        Vettore2D cohesion(const std::vector<Boid>& allBoids) const;
 
         //funzioni ausiliarie
         float distance(const Boid& otherBoid) const;
