@@ -13,11 +13,22 @@ constexpr float VISION_RANGE = 40.0f;
 constexpr float AVOID_FACTOR = 0.05f;
 constexpr float MATCHING_FACTOR = 0.05f;
 constexpr float CENTERING_FACTOR = 0.0005f;
+constexpr float TURN_FACTOR = 0.2f;
 
 //struct ausiliaria per avere una posizione in 2D (x,y) e per avere tipi di ritorno
 struct Vettore2D {
     float x;
     float y;
+};
+
+//struct ausiliaria per avere i margini dello schermo
+struct ScreenBounds {
+    float leftMargin;
+    float rightMargin;
+    float topMargin;
+    float bottomMargin;
+
+    ScreenBounds(float left, float right, float top, float bottom) : leftMargin(left), rightMargin(right), topMargin(top), bottomMargin(bottom) {}
 };
 
 class Boid {
@@ -44,8 +55,14 @@ class Boid {
         //funzioni ausiliarie
         float distance(const Boid& otherBoid) const;
 
+        //funzione di update
+        void update(const std::vector<Boid>& allBoids, const ScreenBounds& bounds);
+
     private:
         float x, y, vx, vy; //vx, vy = velocità su x ed y (che sono sempre comprese tra MIN_SPEED e MAX_SPEED)
+        //gruppo di appartenenza del boid (0 (o altro valore), 1 o 2) --> 0 = boid normali, 1 = gruppo che tende a spostarsi verso dx, 2 = gruppo che tende a spostarsi verso sx
+        int scoutGroup;
+        float biasVal;
 };
 
 #endif //BOIDS_BOID_H

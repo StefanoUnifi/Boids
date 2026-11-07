@@ -107,3 +107,52 @@ Vettore2D Boid::cohesion(const std::vector<Boid>& allBoids) const {
 
     return cohesion;
 }
+
+//funzione di update
+void Boid::update(const std::vector<Boid>& allBoids, const ScreenBounds& bounds) {
+    Vettore2D sep = separation(allBoids);
+    Vettore2D ali = alignment(allBoids);
+    Vettore2D coh = cohesion(allBoids);
+
+    //aggiorna velocità
+    vx += sep.x + ali.x + coh.x;
+    vy += sep.y + ali.y + coh.y;
+
+    //gestione dei bordi dello schermo
+    if (x < bounds.leftMargin)
+        vx += TURN_FACTOR;
+    if (x > bounds.rightMargin)
+        vx -= TURN_FACTOR;
+    if (y < bounds.topMargin)
+        vy += TURN_FACTOR;
+    if (y > bounds.bottomMargin)
+        vy -= TURN_FACTOR;
+
+    //applica il bias al boid
+    if (scoutGroup == 1) {
+        vx = (1 - biasVal) * vx + biasVal * 1.0f; //bias verso destra
+    } else if (scoutGroup == 2) {
+        vx = (1 - biasVal) * vx + biasVal * (-1.0f); //bias verso sinistra
+    }
+
+    //limita la velocità tra MIN_SPEED e MAX_SPEED
+    float speed = std::sqrt(vx * vx + vy * vy);
+
+    //controllo per evitare la divisione per zero
+    if (speed > 0.0f) {
+        if (speed < MIN_SPEED) {
+            vx = (vx / speed) * MIN_SPEED;
+            vy = (vy / speed) * MIN_SPEED;
+        } else if (speed > MAX_SPEED) {
+            vx = (vx / speed) * MAX_SPEED;
+            vy = (vy / speed) * MAX_SPEED;
+        }
+    } else {
+        vx = MIN_SPEED;
+        vy = 0.0f;
+    }
+
+    //aggiorna posizione
+    x += vx;
+    y += vy;
+}
