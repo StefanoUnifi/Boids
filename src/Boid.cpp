@@ -107,3 +107,35 @@ Vettore2D Boid::cohesion(const std::vector<Boid>& allBoids) const {
 
     return cohesion;
 }
+
+//funzione di update
+void Boid::update(const std::vector<Boid>& allBoids) {
+    Vettore2D sep = separation(allBoids);
+    Vettore2D ali = alignment(allBoids);
+    Vettore2D coh = cohesion(allBoids);
+
+    //aggiorna velocità
+    vx += sep.x + ali.x + coh.x;
+    vy += sep.y + ali.y + coh.y;
+
+    //limita la velocità tra MIN_SPEED e MAX_SPEED
+    float speed = std::sqrt(vx * vx + vy * vy);
+
+    //controllo per evitare la divisione per zero
+    if (speed > 0.0f) {
+        if (speed < MIN_SPEED) {
+            vx = (vx / speed) * MIN_SPEED;
+            vy = (vy / speed) * MIN_SPEED;
+        } else if (speed > MAX_SPEED) {
+            vx = (vx / speed) * MAX_SPEED;
+            vy = (vy / speed) * MAX_SPEED;
+        }
+    } else {
+        vx = MIN_SPEED;
+        vy = 0.0f;
+    }
+
+    //aggiorna posizione
+    x += vx;
+    y += vy;
+}

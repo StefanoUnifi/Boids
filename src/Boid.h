@@ -44,6 +44,9 @@ class Boid {
         //funzioni ausiliarie
         float distance(const Boid& otherBoid) const;
 
+        //funzione di update
+        void update(const std::vector<Boid>& allBoids);
+
     private:
         float x, y, vx, vy; //vx, vy = velocità su x ed y (che sono sempre comprese tra MIN_SPEED e MAX_SPEED)
 };
