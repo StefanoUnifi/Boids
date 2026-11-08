@@ -7,7 +7,6 @@ set(SOURCE_FILES
         src/main.cpp
         src/Boid.cpp
         src/Boid.h
-        src/WindowEdges.cpp
 )
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})

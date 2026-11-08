@@ -14,6 +14,8 @@ constexpr float AVOID_FACTOR = 0.05f;
 constexpr float MATCHING_FACTOR = 0.05f;
 constexpr float CENTERING_FACTOR = 0.0005f;
 constexpr float TURN_FACTOR = 0.2f;
+constexpr float MAX_BIAS = 0.01f;
+constexpr float BIAS_INCREMENT = 0.00004f;
 
 //struct ausiliaria per avere una posizione in 2D (x,y) e per avere tipi di ritorno
 struct Vettore2D {
@@ -33,7 +35,7 @@ struct ScreenBounds {
 
 class Boid {
     public:
-        explicit Boid(float x, float y, float vx, float vy);
+        explicit Boid(float x, float y, float vx, float vy, int scoutGroup, float biasVal);
         Boid() = default;
 
         //getters e setters
@@ -54,9 +56,13 @@ class Boid {
 
         //funzioni ausiliarie
         float distance(const Boid& otherBoid) const;
+        float squaredDistance(const Boid& otherBoid) const;
 
-        //funzione di update
-        void update(const std::vector<Boid>& allBoids, const ScreenBounds& bounds);
+        //funzione di update modulare (con le 3 regole separate)
+        void updateModular(const std::vector<Boid>& allBoids, const ScreenBounds& bounds);
+
+        //funzione di update (con le 3 regole combinate)
+        void updateOptimized(const std::vector<Boid>& allBoids, const ScreenBounds& bounds);
 
     private:
         float x, y, vx, vy; //vx, vy = velocità su x ed y (che sono sempre comprese tra MIN_SPEED e MAX_SPEED)
