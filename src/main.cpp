@@ -7,7 +7,7 @@
 
 int main() {
     //parametri di inizializzazione per boids
-    const int N_BOIDS = 400; //numero di boids
+    const int N_BOIDS = 500; //numero di boids
     std::vector<Boid> boids;
     boids.reserve(N_BOIDS);
 
@@ -43,25 +43,43 @@ int main() {
         boids.emplace_back(x, y, vx, vy, scoutGroup, biasVal);
     }
 
-    std::vector <Boid> boids_copy = boids; //copia dei boids per l'aggiornamento
+    //versione modulare (con le 3 regole separate)
+    std::vector <Boid> boids_mod = boids;
+    std::vector <Boid> boids_mod_copy = boids_mod;
 
-    //inizio simulazione per N_FRAMES
-    auto start_time = std::chrono::high_resolution_clock::now();
+    auto start_mod_time = std::chrono::high_resolution_clock::now();
 
     for (int frame = 0; frame < N_FRAMES; frame++) {
         //aggiorna i boids
         for (size_t i = 0; i < boids.size(); ++i) {
-            boids_copy[i] = boids[i]; //copia lo stato attuale del boid
-            boids_copy[i].updateOptimized(boids, screenBounds); //aggiorna il boid
+            boids_mod_copy[i] = boids_mod[i]; //copia lo stato attuale del boid
+            boids_mod_copy[i].updateModular(boids_mod, screenBounds); //aggiorna il boid
         }
-        boids = boids_copy; //aggiorna lo stato dei boids con la copia aggiornata
+        boids_mod = boids_mod_copy; //aggiorna lo stato dei boids con la copia aggiornata
     }
+    auto end_mod_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed_mod = end_mod_time - start_mod_time;
 
-    auto end_time = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
+
+    //versione ottimizzata (con le 3 regole combinate)
+    std::vector <Boid> boids_opt = boids;
+    std::vector <Boid> boids_opt_copy = boids_opt;
+
+    auto start_opt_time = std::chrono::high_resolution_clock::now();
+
+    for (int frame = 0; frame < N_FRAMES; frame++) {
+        for (size_t i = 0; i < boids.size(); ++i) {
+            boids_opt_copy[i] = boids_opt[i];
+            boids_opt_copy[i].updateOptimized(boids_opt, screenBounds);
+        }
+        boids_opt = boids_opt_copy;
+    }
+    auto end_opt_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed_opt = end_opt_time - start_opt_time;
 
     std::cout << "Simulazione completata per " << N_FRAMES << " frame con " << N_BOIDS << " boids. " << std::endl;
-    std::cout << "Tempo impiegato: " << elapsed.count() << " ms\n" << std::endl;
+    std::cout << "1. Tempo impiegato per versione MODULARE: " << elapsed_mod.count() << " ms\n" << std::endl;
+    std::cout << "2. Tempo impiegato per versione OTTIMIZZATA: " << elapsed_opt.count() << " ms\n" << std::endl;
 
     return 0;
 }
